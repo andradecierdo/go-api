@@ -1,24 +1,35 @@
 package main
 
-import "net/http"
+import (
+	"github.com/andradecierdo/go-api/data"
+	"github.com/andradecierdo/go-api/services"
+	"github.com/gorilla/mux"
+	"net/http"
+)
 
 func main() {
-	mux := http.NewServeMux()
+	router := mux.NewRouter()
 
-	// Register the routes and handlers
-	mux.Handle("/", &homeHandler{})
+	health := healthCheckHandler{}
+	router.HandleFunc("/health", health.HealthCheck)
+
+	store := data.NewBlogMemStore()
+	blogService := services.NewBlogService(store)
+
+	router.HandleFunc("/blogs", blogService.GetBlogs).Methods("GET")
+	router.HandleFunc("/blogs/{id}", blogService.GetBlog).Methods("GET")
 
 	// Run the server
-	err := http.ListenAndServe(":8080", mux)
+	err := http.ListenAndServe(":8080", router)
 	if err != nil {
 		return
 	}
 }
 
-type homeHandler struct{}
+type healthCheckHandler struct{}
 
-func (h *homeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("Andrade Chris Decierdo"))
+func (h *healthCheckHandler) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	_, err := w.Write([]byte("Health Check"))
 	if err != nil {
 		return
 	}
