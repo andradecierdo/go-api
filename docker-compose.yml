@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db:
+  postgres:
     image: postgres:alpine
     environment:
       - POSTGRES_USER=${DB_USER}
@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-db:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
 
 volumes:
-  postgres-db:
+  postgres:
