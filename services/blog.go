@@ -12,10 +12,10 @@ import (
 )
 
 type BlogService struct {
-	Repository repositories.BlogRepository
+	Repository repositories.IBlogRepository // TODO interface name convention
 }
 
-func NewBlogService(repo repositories.BlogRepository) *BlogService {
+func NewBlogService(repo repositories.IBlogRepository) *BlogService {
 	return &BlogService{
 		Repository: repo,
 	}
@@ -64,6 +64,7 @@ func (service BlogService) GetBlog(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBytes)
 }
 
+// TODO create separate file for error handlers
 func InternalServerErrorHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusInternalServerError)
 	_, err := w.Write([]byte("500 Internal Server Error"))

@@ -1,5 +1,5 @@
 CREATE TABLE blogs (
-   id UUID PRIMARY KEY NOT NULL,
+   id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
    userId UUID NOT NULL,
    title VARCHAR(255) NOT NULL,
    content TEXT NOT NULL,

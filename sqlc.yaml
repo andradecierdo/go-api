@@ -1,0 +1,28 @@
+version: "2"
+
+cloud:
+    organization: ""
+    project: ""
+    hostname: ""
+sql:
+    - schema: "database/migrations/"
+      queries: "database/queries/"
+      engine: "postgresql"
+      gen:
+          go:
+              package: "database"
+              out: "database"
+              emit_json_tags: true
+              emit_prepared_queries: true
+              emit_interface: false
+              emit_exact_table_names: false
+              emit_empty_slices: true
+      database:
+          uri: "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
+      rules:
+          - sqlc/db-prepare
+overrides:
+    go: null
+plugins: []
+rules: []
+options: {}

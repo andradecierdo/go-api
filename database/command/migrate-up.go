@@ -10,16 +10,18 @@ import (
 )
 
 func main() {
-	envFile, _ := godotenv.Read("../.env")
+	envFile, _ := godotenv.Read("../../.env")
 	databaseUrl := fmt.Sprintf(
-		"postgres://%s:%s@localhost:5432/%s?sslmode=disable",
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		envFile["DB_USER"],
 		envFile["DB_PASSWORD"],
+		envFile["DB_HOST"],
+		envFile["DB_PORT"],
 		envFile["DB_NAME"],
 	)
 
 	m, err := migrate.New(
-		"file://migrations",
+		"file://../migrations",
 		databaseUrl,
 	)
 
