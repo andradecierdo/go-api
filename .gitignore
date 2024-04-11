@@ -9,4 +9,7 @@
 /dataSources/
 /dataSources.local.xml
 
+# yml config variables
+/uncommitted
+
 .env

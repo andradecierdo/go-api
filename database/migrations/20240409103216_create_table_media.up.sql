@@ -1,6 +1,6 @@
 CREATE TABLE media (
-   id UUID PRIMARY KEY NOT NULL,
-   blogIdd UUID NOT NULL,
+   id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+   blogId UUID NOT NULL,
    path VARCHAR(255) NOT NULL,
    source VARCHAR(100) NOT NULL,
    name VARCHAR(255) NOT NULL,
@@ -8,4 +8,4 @@ CREATE TABLE media (
    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE INDEX idx_blog_id ON media (blogIdd);
+CREATE INDEX idx_blog_id ON media (blogId);
