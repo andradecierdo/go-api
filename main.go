@@ -43,7 +43,14 @@ func main() {
 	userRepo := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepo)
 
+	// Users
+	router.HandleFunc("/users", userService.GetUsers).Methods("GET")
 	router.HandleFunc("/users", userService.CreateUser).Methods("POST")
+	router.HandleFunc("/users/{id}", userService.UpdateUser).Methods("POST")
+	router.HandleFunc("/users/{id}", userService.GetUserById).Methods("GET")
+	router.HandleFunc("/users/{id}", userService.DeleteUser).Methods("DELETE")
+
+	// Blogs
 	router.HandleFunc("/blogs", blogService.GetBlogs).Methods("GET")
 	router.HandleFunc("/blogs/{id}", blogService.GetBlog).Methods("GET")
 
