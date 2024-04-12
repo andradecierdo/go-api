@@ -30,6 +30,7 @@ func toUserModel(dbUser db.User) models.User {
 		FirstName: dbUser.Firstname,
 		LastName:  dbUser.Lastname,
 		Email:     dbUser.Email,
+		IsAdmin:   dbUser.Isadmin,
 		CreatedAt: dbUser.Createdat,
 	}
 }
@@ -91,6 +92,7 @@ func (repo *UserRepository) GetUsers(pagination models.Pagination, ctx context.C
 	for _, user := range users {
 		userList = append(userList, toUserModel(user))
 	}
+
 	return userList, nil
 }
 

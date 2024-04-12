@@ -18,7 +18,7 @@ INSERT INTO "users"(
     email
 ) VALUES (
      $1, $2, $3
-) RETURNING id, firstname, lastname, email, createdat
+) RETURNING id, firstname, lastname, email, isadmin, createdat
 `
 
 type CreateUserParams struct {
@@ -35,6 +35,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Firstname,
 		&i.Lastname,
 		&i.Email,
+		&i.Isadmin,
 		&i.Createdat,
 	)
 	return i, err
@@ -51,7 +52,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT id, firstname, lastname, email, createdat FROM "users"
+SELECT id, firstname, lastname, email, isadmin, createdat FROM "users"
 WHERE id = $1 LIMIT 1
 `
 
@@ -63,13 +64,14 @@ func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.Firstname,
 		&i.Lastname,
 		&i.Email,
+		&i.Isadmin,
 		&i.Createdat,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, firstname, lastname, email, createdat FROM "users"
+SELECT id, firstname, lastname, email, isadmin, createdat FROM "users"
 ORDER BY id
     LIMIT $1
 OFFSET $2
@@ -94,6 +96,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.Firstname,
 			&i.Lastname,
 			&i.Email,
+			&i.Isadmin,
 			&i.Createdat,
 		); err != nil {
 			return nil, err
@@ -116,7 +119,7 @@ SET
     lastName = $3,
     email = $4
 WHERE id = $1
-    RETURNING id, firstname, lastname, email, createdat
+    RETURNING id, firstname, lastname, email, isadmin, createdat
 `
 
 type UpdateUserParams struct {
@@ -139,6 +142,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Firstname,
 		&i.Lastname,
 		&i.Email,
+		&i.Isadmin,
 		&i.Createdat,
 	)
 	return i, err
