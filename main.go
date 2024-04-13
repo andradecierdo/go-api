@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/andradecierdo/go-api/data"
 	dbConn "github.com/andradecierdo/go-api/database"
-	"github.com/andradecierdo/go-api/repositories"
+	"github.com/andradecierdo/go-api/database/controllers"
 	"github.com/andradecierdo/go-api/services"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -36,21 +36,18 @@ func main() {
 	health := healthCheckHandler{}
 	router.HandleFunc("/health", health.HealthCheck)
 
+	// Users
+	userController := controllers.NewUserController(db)
+	router.HandleFunc("/users", userController.GetUsers).Methods("GET")
+	router.HandleFunc("/users", userController.CreateUser).Methods("POST")
+	router.HandleFunc("/users/{id}", userController.UpdateUser).Methods("POST")
+	router.HandleFunc("/users/{id}", userController.GetUserById).Methods("GET")
+	router.HandleFunc("/users/{id}", userController.DeleteUser).Methods("DELETE")
+
+	// Blogs
 	// TODO refactor blog service
 	store := data.NewBlogMemStore()
 	blogService := services.NewBlogService(store)
-
-	userRepo := repositories.NewUserRepository(db)
-	userService := services.NewUserService(userRepo)
-
-	// Users
-	router.HandleFunc("/users", userService.GetUsers).Methods("GET")
-	router.HandleFunc("/users", userService.CreateUser).Methods("POST")
-	router.HandleFunc("/users/{id}", userService.UpdateUser).Methods("POST")
-	router.HandleFunc("/users/{id}", userService.GetUserById).Methods("GET")
-	router.HandleFunc("/users/{id}", userService.DeleteUser).Methods("DELETE")
-
-	// Blogs
 	router.HandleFunc("/blogs", blogService.GetBlogs).Methods("GET")
 	router.HandleFunc("/blogs/{id}", blogService.GetBlog).Methods("GET")
 

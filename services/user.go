@@ -1,14 +1,11 @@
 package services
 
 import (
-	"encoding/json"
+	"context"
 	"github.com/andradecierdo/go-api/models"
 	"github.com/andradecierdo/go-api/repositories"
 	"github.com/andradecierdo/go-api/utils"
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
-	"net/http"
-	"strconv"
 )
 
 type UserService struct {
@@ -21,115 +18,28 @@ func NewUserService(repo *repositories.UserRepository) *UserService {
 	}
 }
 
-// TODO enhance error handling
-func (service UserService) CreateUser(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var userInput models.UserInput
-	err := decoder.Decode(&userInput)
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	resources, err := service.Repository.CreateUser(&userInput, r.Context())
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	jsonBytes, err := json.Marshal(resources)
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonBytes)
+func (service UserService) CreateUser(ctx context.Context, userInput *models.UserInput) (*models.User, error) {
+	// TODO add input validation
+	return service.Repository.CreateUser(ctx, userInput)
 }
 
-func (service UserService) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	userId := uuid.MustParse(mux.Vars(r)["id"])
-
-	decoder := json.NewDecoder(r.Body)
-	var userInput models.UserInput
-	err := decoder.Decode(&userInput)
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	resources, err := service.Repository.UpdateUser(userId, &userInput, r.Context())
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	jsonBytes, err := json.Marshal(resources)
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonBytes)
+func (service UserService) GetUserById(ctx context.Context, id uuid.UUID) (*models.User, error) {
+	return service.Repository.GetUserById(ctx, id)
 }
 
-func (service UserService) GetUserById(w http.ResponseWriter, r *http.Request) {
-	userId := uuid.MustParse(mux.Vars(r)["id"])
-	resources, err := service.Repository.GetUserById(userId, r.Context())
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	jsonBytes, err := json.Marshal(resources)
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonBytes)
+func (service UserService) UpdateUser(ctx context.Context, id uuid.UUID, input *models.UserInput) (*models.User, error) {
+	// TODO add input validation
+	return service.Repository.UpdateUser(ctx, id, input)
 }
 
-func (service UserService) GetUsers(w http.ResponseWriter, r *http.Request) {
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+func (service UserService) GetUsers(ctx context.Context, pagination models.Pagination) ([]*models.User, error) {
+	pagination.Page = utils.Page(pagination.Page, 1)
+	pagination.Limit = utils.Page(pagination.Limit, 10)
 
-	pagination := models.Pagination{
-		Page:  utils.Page(page, 1),
-		Limit: utils.Page(limit, 10),
-	}
-	resources, err := service.Repository.GetUsers(pagination, r.Context())
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	jsonBytes, err := json.Marshal(resources)
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonBytes)
+	return service.Repository.GetUsers(ctx, pagination)
 }
 
-func (service UserService) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	userId := uuid.MustParse(mux.Vars(r)["id"])
-	err := service.Repository.DeleteUser(userId, r.Context())
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	jsonBytes, err := json.Marshal("User successfully deleted.")
-	if err != nil {
-		InternalServerErrorHandler(w, r)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonBytes)
+func (service UserService) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	// TODO add validation
+	return service.Repository.DeleteUser(ctx, id)
 }
