@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	envFile, _ := godotenv.Read("../.env")
+	envFile, _ := godotenv.Read("../../.env")
 	databaseUrl := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		envFile["DB_USER"],
